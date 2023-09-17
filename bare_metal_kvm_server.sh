@@ -6,7 +6,7 @@
    #           Copyright (C) 2023 Terry Bardell Jr                 #
    #       Licensed under the GNU General Public License 3.0       #
    #                                                               #
-   #                                                               #
+   #      https://github.com/tlbardelljr/bare-metal-kvm-server     #
    #                                                               #
    #################################################################
    
@@ -21,47 +21,47 @@ command -v yum > /dev/null && package_manager="yum"
 command -v zypper > /dev/null && package_manager="zypper"
  
 Update () {
-	sudo "$package_manager" update -y 1> /dev/null
+	sudo "$package_manager" update -y 
 }
  
 Curl () {
-	sudo "$package_manager" install -y curl 1> /dev/null
+	sudo "$package_manager" install -y curl
 }
 
 Git () {
-	sudo "$package_manager" install -y git 1> /dev/null
+	sudo "$package_manager" install -y git 
 }
 
 Cockpit () {
-	sudo "$package_manager" install -y cockpit cockpit-machines 1> /dev/null
-	sudo systemctl enable --now cockpit.socket 1> /dev/null
+	sudo "$package_manager" install -y cockpit cockpit-machines 
+	sudo systemctl enable --now cockpit.socket 
 }
 
 Webmin () {
 	case "$package_manager" in
 
 	apt-get) 
-		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh 1> /dev/null
-		sudo sh setup-repos.sh --force 1> /dev/null
-		sudo apt-get install --install-recommends webmin -y 1> /dev/null
+		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh 
+		sudo sh setup-repos.sh --force 
+		sudo apt-get install --install-recommends webmin -y 
 	    	;;
 	yum) 
-		sudo dnf install -y 'perl(IO::Pty)' 1> /dev/null
-		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh 1> /dev/null
-		sudo sh setup-repos.sh --force 1> /dev/null
-		sudo dnf install webmin -y 1> /dev/null
+		sudo dnf install -y 'perl(IO::Pty)' 
+		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh 
+		sudo sh setup-repos.sh --force 
+		sudo dnf install webmin -y 
 		echo Enter password for webmim root account to login webmin?
 		echo " "
 		read -s password < $terminal
 		sudo /usr/libexec/webmin/changepass.pl /etc/webmin root "$password"
 	    	;;
 	zypper)  
-		sudo zypper install -y 'perl(IO::Pty)' 1> /dev/null
-		sudo zypper -n install apache2 1> /dev/null
-		sudo zypper -n install openssl openssl-devel 1> /dev/null
-		sudo zypper -n install perl perl-Net-SSLeay perl-Crypt-SSLeay 1> /dev/null
-		sudo wget http://prdownloads.sourceforge.net/webadmin/webmin-1.770-1.noarch.rpm 1> /dev/null
-		sudo rpm -ivh webmin-1.770-1.noarch.rpm 1> /dev/null
+		sudo zypper install -y 'perl(IO::Pty)' 
+		sudo zypper -n install apache2 
+		sudo zypper -n install openssl openssl-devel 
+		sudo zypper -n install perl perl-Net-SSLeay perl-Crypt-SSLeay 
+		sudo wget http://prdownloads.sourceforge.net/webadmin/webmin-1.770-1.noarch.rpm 
+		sudo rpm -ivh webmin-1.770-1.noarch.rpm 
 		;;
 	*) 	echo "Package manager error"
 	   	;;
@@ -72,25 +72,25 @@ KVM () {
 	case "$package_manager" in
 
 	apt-get) 
-		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager 1> /dev/null
-		sudo "$package_manager" install -y libvirt-daemon-system libvirt-clients virtinst libguestfs-tools libosinfo-bin 1> /dev/null 
+		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager 
+		sudo "$package_manager" install -y libvirt-daemon-system libvirt-clients virtinst libguestfs-tools libosinfo-bin 
 		echo Enter login name to add to libvirt group?
 		read username < $terminal
 		sudo usermod -aG libvirt "$username"
 	    	;;
 	yum) 
-		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager 1> /dev/null
-		sudo "$package_manager" install -y libvirt virt-install libvirt-devel virt-top libguestfs-tools guestfs-tools 1> /dev/null
+		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager
+		sudo "$package_manager" install -y libvirt virt-install libvirt-devel virt-top libguestfs-tools guestfs-tools 
 		echo Enter login name to add to libvirt group?
 		read username < $terminal
 		sudo usermod -aG libvirt "$username"
 		sudo systemctl start libvirtd
-		sudo systemctl enable libvirtd 1> /dev/null
+		sudo systemctl enable libvirtd
 	    	;;
 	zypper)  
-		sudo zypper install -y -t pattern kvm_server kvm_tools 1> /dev/null
-		sudo zypper install -y libvirt libvirt-daemon libvirt-daemon-config-nwfilter 1> /dev/null
-		sudo zypper install -y bridge-utils virt-manager 1> /dev/null
+		sudo zypper install -y -t pattern kvm_server kvm_tools 
+		sudo zypper install -y libvirt libvirt-daemon libvirt-daemon-config-nwfilter
+		sudo zypper install -y bridge-utils virt-manager
 		sudo systemctl enable --now libvirtd
 		
 	    	;;
@@ -100,13 +100,13 @@ KVM () {
 }
 
 Boot-headless () {
-	sudo systemctl set-default multi-user.target 1> /dev/null
+	sudo systemctl set-default multi-user.target 
 	echo -e ' '
 	echo "After reboot enter to boot GUI: sudo systemctl isolate graphical.target"
 }
 
 CIFS () {
-	sudo "$package_manager" install -y cifs-utils 1> /dev/null
+	sudo "$package_manager" install -y cifs-utils 
 }
 
 Network-Bridge () {
@@ -121,10 +121,10 @@ Network-Bridge () {
 	echo Enter ip address for gateway?
 	read gateway < $terminal
 	
-	sudo nmcli connection add type bridge autoconnect yes con-name br0 ifname br0 1> /dev/null
-	sudo nmcli connection modify br0 ipv4.addresses "$ip_address" gw4 "$gateway" ipv4.method manual 1> /dev/null
-	sudo nmcli connection modify br0 ipv4.dns "$gateway" 1> /dev/null
-	sudo nmcli connection add type bridge-slave autoconnect yes con-name "$interface_name" ifname "$interface_name" master br0 1> /dev/null
+	sudo nmcli connection add type bridge autoconnect yes con-name br0 ifname br0
+	sudo nmcli connection modify br0 ipv4.addresses "$ip_address" gw4 "$gateway" ipv4.method manual 
+	sudo nmcli connection modify br0 ipv4.dns "$gateway" 
+	sudo nmcli connection add type bridge-slave autoconnect yes con-name "$interface_name" ifname "$interface_name" master br0 
 	sudo nmcli connection up br0
 }
 
@@ -135,19 +135,19 @@ ssh () {
 	case "$package_manager" in
 
 	apt-get) 
-		sudo "$package_manager" install openssh-server -y 1> /dev/null
+		sudo "$package_manager" install openssh-server -y 
 		sudo systemctl start ssh
-		sudo systemctl enable ssh 1> /dev/null
+		sudo systemctl enable ssh 
 	    	;;
 	yum) 
-		sudo "$package_manager" install openssh-server -y 1> /dev/null
+		sudo "$package_manager" install openssh-server -y 
 		sudo systemctl start sshd
-		sudo systemctl enable sshd 1> /dev/null
+		sudo systemctl enable sshd 
 	    	;;
 	zypper)  
-		sudo "$package_manager" install -y openssh-server 1> /dev/null
+		sudo "$package_manager" install -y openssh-server 
 		sudo systemctl start sshd
-		sudo systemctl enable sshd 1> /dev/null
+		sudo systemctl enable sshd 
 	    	;;
 	*) 	echo "Package manager error"
 	   	;;
@@ -160,9 +160,12 @@ install_app () {
    		read -p "Please answer (y)es or (n)o." yn
     	case $yn in
         		[Yy]* ) 
-        			spinner &                                             # calls the loading function
+        			
+        			spinner $1 &                                       # calls the loading function
     				local whilePID=$!                                  # gets the pid for the loop
-        			$1 &
+    				tput csr 6 $(($(tput lines) - 4))
+			    	tput cup 6 0
+			    	$1 &
         			local backupPID=$!                                 # get's back up pid
 			    	wait $backupPID                                    # waits for backup id
 			    	kill $whilePID                                     # kills the while loop
@@ -176,12 +179,12 @@ install_app () {
 
 function spinner() { # just a function to hold the spinner loop, here you can put whatever
     while true; do
-    	sleep 3
+    	sleep 2
     	tput sc
     	Margin=5
     	Rows=$(tput lines)
     	Cols=$(tput cols)-$((Margin*2))-2
-    	tput cup $(($Rows - 3)) $Margin
+    	tput cup $(($Rows - 2)) $Margin
     	((progress=progress+1))
     	((remaining=${Cols}-${progress}))
     	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
@@ -302,10 +305,7 @@ install_app Update
 
 clear
 echo "$installer_name"
-
 echo -e '\narrow up/down space bar to select'
-
-
 multiselect result my_options preselection
 
 idx=0
