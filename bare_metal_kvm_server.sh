@@ -30,7 +30,6 @@ Update () {
  
 Curl () {
 	sudo "$package_manager" install -y curl
-	sleep 10
 }
 
 Git () {
@@ -180,17 +179,26 @@ install_app () {
 }
 
 function spinner() { # just a function to hold the spinner loop, here you can put whatever
-    while true; do
+   while true; do
     	sleep 2
     	tput sc
     	Margin=5
     	Rows=$(tput lines)
     	Cols=$(tput cols)-$((Margin*2))-2
-    	tput cup $(($Rows - 4)) $Margin
+    	tput cup $(($Rows)) $Margin
+    	tput el
+    	tput el1
+    	tput cup $(($Rows - 1)) $Margin
+    	tput el
+    	tput el1
+    	tput cup $(($Rows - 2)) $Margin
+    	tput el
+    	tput el1
     	((progress=progress+1))
     	((remaining=${Cols}-${progress}))
     	tput bold
     	tput setaf $progressBarColor
+    	
     	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
     	tput sgr0
     	if (( $progress > ($((Cols-2))) )); then
