@@ -6,13 +6,17 @@
    #           Copyright (C) 2023 Terry Bardell Jr                 #
    #       Licensed under the GNU General Public License 3.0       #
    #                                                               #
-   #      https://github.com/tlbardelljr/bare-metal-kvm-server     #
+   #                                                               #
    #                                                               #
    #################################################################
    
 my_options=(   "Curl"  "Git"  "Cockpit" "Webmin" "KVM"  "Boot-headless" "CIFS"  "Network-Bridge" "ssh"   )
 preselection=( "true"  "true" "true"    "true"   "true" "false"         "false" "true"           "false" )
 installer_name="tlbardelljr network VM installer"
+sdoutColor=252
+progressBarColor=226
+headerColorFG=226
+headerColorBG=124
 
 export terminal=$(tty)
 
@@ -26,6 +30,7 @@ Update () {
  
 Curl () {
 	sudo "$package_manager" install -y curl
+	sleep 10
 }
 
 Git () {
@@ -129,9 +134,6 @@ Network-Bridge () {
 }
 
 ssh () {
-	
-	
-	
 	case "$package_manager" in
 
 	apt-get) 
@@ -163,10 +165,10 @@ install_app () {
         			
         			spinner $1 &                                       # calls the loading function
     				local whilePID=$!                                  # gets the pid for the loop
-    				tput csr 6 $(($(tput lines) - 4))
-			    	tput cup 6 0
+    				tput csr 7 $(($(tput lines) - 7))
+			    	tput cup 7 0
 			    	$1 &
-        			local backupPID=$!                                 # get's back up pid
+			    	local backupPID=$!                                 # get's back up pid
 			    	wait $backupPID                                    # waits for backup id
 			    	kill $whilePID                                     # kills the while loop
 			    	
@@ -184,10 +186,13 @@ function spinner() { # just a function to hold the spinner loop, here you can pu
     	Margin=5
     	Rows=$(tput lines)
     	Cols=$(tput cols)-$((Margin*2))-2
-    	tput cup $(($Rows - 2)) $Margin
+    	tput cup $(($Rows - 4)) $Margin
     	((progress=progress+1))
     	((remaining=${Cols}-${progress}))
+    	tput bold
+    	tput setaf $progressBarColor
     	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
+    	tput sgr0
     	if (( $progress > ($((Cols-2))) )); then
    		((progress=1))
         fi
@@ -195,6 +200,18 @@ function spinner() { # just a function to hold the spinner loop, here you can pu
     done
 }
 
+function Header() { 
+	tput bold
+	tput setaf $headerColorFG
+	tput setab $headerColorBG
+	((ESpace=$(tput cols)-(${#installer_name})))
+    	((LSide=((${ESpace}/2))-2))
+    	((RSide=$(tput cols)-(${#installer_name})-${LSide}-4))
+    	tput cup 0 0
+    	echo -ne "[$(printf "%${LSide}s" | tr " " "#") $(printf "$installer_name") $(printf "%${RSide}s" | tr " " "-")]"
+    	tput sgr0
+    	echo -e ' '
+}
 function multiselect {
     # little helpers for terminal print control and key input
     ESC=$( printf "\033")
@@ -299,26 +316,50 @@ function multiselect {
 }
 
 clear
-echo "$installer_name"
-echo "Updating Packages...."
-install_app Update
+TRows=$(tput lines)
+TCols=$(tput cols)
+if (( "90" > ${TCols} )); then
+   	clear
+   	Header
+	echo -e ' '
+      	echo "Terminal not wide enough ($TCols - columns)"
+      	echo "Need 90 columns. Make terminal wider."
+      	exit
+fi
+if (( "25" > ${TRows} )); then
+   	clear
+   	Header
+	echo -e ' '
+      	echo "Terminal not tall enough ($TRows - rows)"
+      	echo "Need 25 rows. Make terminal taller."
+      	exit
+fi
 
+Header
+echo "Updating Packages...."
+tput setaf $sdoutColor
+install_app Update
+tput sgr0
 clear
-echo "$installer_name"
-echo -e '\narrow up/down space bar to select'
+Header
+echo -e '\nArrow up/down space bar to select'
+echo -e ' '
 multiselect result my_options preselection
 
 idx=0
 for option in "${my_options[@]}"; do
    if [ "true" = "${result[idx]}" ]; then
    	clear
-   	echo "$installer_name"
+   	Header
 	echo -e ' '
-      	echo "Installing.. $option"
+	echo "Installing.. $option"
+      	tput setaf $sdoutColor
       	install_app $option
       	echo -e ' '
+      	tput sgr0
       	echo "Finished option.. $option"
       	read -p "Press enter to continue"
+      	
    fi
     ((idx++))
 done
