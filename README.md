@@ -23,7 +23,7 @@ OpenSUSE / Gnome 44.4
 
 
 ```
-wget https://github.com/tlbardelljr/bare-metal-kvm-server/main/bare_metal_kvm_server.sh
+wget https://raw.githubusercontent.com/tlbardelljr/bare-metal-kvm-server/main/bare_metal_kvm_server.sh
 ```
 
 ```
