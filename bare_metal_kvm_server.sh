@@ -56,7 +56,7 @@ Webmin () {
 		sudo dnf install webmin -y 
 		echo Enter password for webmim root account to login webmin?
 		echo " "
-		read -s password < $terminal
+		read -s password
 		sudo /usr/libexec/webmin/changepass.pl /etc/webmin root "$password"
 	    	;;
 	zypper)  
@@ -79,14 +79,14 @@ KVM () {
 		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager 
 		sudo "$package_manager" install -y libvirt-daemon-system libvirt-clients virtinst libguestfs-tools libosinfo-bin 
 		echo Enter login name to add to libvirt group?
-		read username < $terminal
+		read username
 		sudo usermod -aG libvirt "$username"
 	    	;;
 	yum) 
 		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager
 		sudo "$package_manager" install -y libvirt virt-install libvirt-devel virt-top libguestfs-tools guestfs-tools 
 		echo Enter login name to add to libvirt group?
-		read username < $terminal
+		read username 
 		sudo usermod -aG libvirt "$username"
 		sudo systemctl start libvirtd
 		sudo systemctl enable libvirtd
@@ -116,14 +116,14 @@ CIFS () {
 Network-Bridge () {
 	sudo nmcli connection show
 	echo Enter network interface name to link to bridge br0?
-	read interface_name < $terminal
+	read interface_name
 	echo " "
 	echo Use prefix length for network mask.
 	echo 'Example 192.168.0.5 255.255.0.0 would be entered 192.168.0.5/16.'
 	echo Enter ipadress with prefix length?
-	read ip_address < $terminal
+	read ip_address 
 	echo Enter ip address for gateway?
-	read gateway < $terminal
+	read gateway
 	
 	sudo nmcli connection add type bridge autoconnect yes con-name br0 ifname br0
 	sudo nmcli connection modify br0 ipv4.addresses "$ip_address" gw4 "$gateway" ipv4.method manual 
