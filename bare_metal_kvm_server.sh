@@ -6,17 +6,18 @@
    #           Copyright (C) 2023 Terry Bardell Jr                 #
    #       Licensed under the GNU General Public License 3.0       #
    #                                                               #
-   #                                                               #
+   #      https://github.com/tlbardelljr/bare-metal-kvm-server     #
    #                                                               #
    #################################################################
    
 my_options=(   "Curl"  "Git"  "Cockpit" "Webmin" "KVM"  "Boot-headless" "CIFS"  "Network-Bridge" "ssh"   )
 preselection=( "true"  "true" "true"    "true"   "true" "false"         "false" "true"           "false" )
 installer_name="tlbardelljr network VM installer"
-sdoutColor=252
-progressBarColor=226
-headerColorFG=226
-headerColorBG=124
+sdoutColor=250
+progressBarColorFG=226
+progressBarColorBG=242
+headerColorFG=255
+headerColorBG=242
 
 export terminal=$(tty)
 
@@ -25,47 +26,51 @@ command -v yum > /dev/null && package_manager="yum"
 command -v zypper > /dev/null && package_manager="zypper"
  
 Update () {
-	sudo "$package_manager" update -y 
+	sudo "$package_manager" update -y & pid=$!; wait $pid
 }
  
 Curl () {
-	sudo "$package_manager" install -y curl
+	sudo "$package_manager" install -y curl & pid=$!; wait $pid
 }
 
 Git () {
-	sudo "$package_manager" install -y git 
+	sudo "$package_manager" install -y git & pid=$!; wait $pid 
 }
 
 Cockpit () {
-	sudo "$package_manager" install -y cockpit cockpit-machines 
-	sudo systemctl enable --now cockpit.socket 
+	sudo "$package_manager" install -y cockpit & pid=$!; wait $pid
+	sudo "$package_manager" install -y cockpit-machines& pid=$!; wait $pid 
+	sudo systemctl enable --now cockpit.socket & pid=$!; wait $pid
 }
 
 Webmin () {
 	case "$package_manager" in
 
 	apt-get) 
-		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh 
-		sudo sh setup-repos.sh --force 
-		sudo apt-get install --install-recommends webmin -y 
+		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh & pid=$!; wait $pid 
+		sudo sh setup-repos.sh --force & pid=$!; wait $pid 
+		sudo apt-get install --install-recommends webmin -y & pid=$!; wait $pid 
 	    	;;
 	yum) 
-		sudo dnf install -y 'perl(IO::Pty)' 
-		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh 
-		sudo sh setup-repos.sh --force 
-		sudo dnf install webmin -y 
+		sudo dnf install -y 'perl(IO::Pty)' & pid=$!; wait $pid  
+		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh & pid=$!; wait $pid  
+		sudo sh setup-repos.sh --force & pid=$!; wait $pid  
+		sudo dnf install webmin -y & pid=$!; wait $pid  
 		echo Enter password for webmim root account to login webmin?
 		echo " "
 		read -e password < $terminal
-		sudo /usr/libexec/webmin/changepass.pl /etc/webmin root "$password"
+		sudo /usr/libexec/webmin/changepass.pl /etc/webmin root "$password" & pid=$!; wait $pid 
 	    	;;
 	zypper)  
-		sudo zypper install -y 'perl(IO::Pty)' 
-		sudo zypper -n install apache2 
-		sudo zypper -n install openssl openssl-devel 
-		sudo zypper -n install perl perl-Net-SSLeay perl-Crypt-SSLeay 
-		sudo wget http://prdownloads.sourceforge.net/webadmin/webmin-1.770-1.noarch.rpm 
-		sudo rpm -ivh webmin-1.770-1.noarch.rpm 
+		sudo zypper install -y 'perl(IO::Pty)' & pid=$!; wait $pid  
+		sudo zypper -n install apache2 & pid=$!; wait $pid  
+		sudo zypper -n install openssl & pid=$!; wait $pid 
+		sudo zypper -n install openssl-devel & pid=$!; wait $pid   
+		sudo zypper -n install perl & pid=$!; wait $pid 
+		sudo zypper -n install perl-Net-SSLeay & pid=$!; wait $pid 
+		sudo zypper -n install perl-Crypt-SSLeay & pid=$!; wait $pid  
+		sudo wget http://prdownloads.sourceforge.net/webadmin/webmin-1.770-1.noarch.rpm & pid=$!; wait $pid  
+		sudo rpm -ivh webmin-1.770-1.noarch.rpm & pid=$!; wait $pid  
 		;;
 	*) 	echo "Package manager error"
 	   	;;
@@ -76,26 +81,44 @@ KVM () {
 	case "$package_manager" in
 
 	apt-get) 
-		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager 
-		sudo "$package_manager" install -y libvirt-daemon-system libvirt-clients virtinst libguestfs-tools libosinfo-bin 
+		sudo "$package_manager" install -y qemu-kvm & pid=$!; wait $pid
+		sudo "$package_manager" install -y bridge-utils & pid=$!; wait $pid
+		sudo "$package_manager" install -y virt-manager & pid=$!; wait $pid 
+		sudo "$package_manager" install -y libvirt-daemon-system & pid=$!; wait $pid
+		sudo "$package_manager" install -y libvirt-clients & pid=$!; wait $pid
+		sudo "$package_manager" install -y virtinst & pid=$!; wait $pid
+		sudo "$package_manager" install -y libguestfs-tools & pid=$!; wait $pid
+		sudo "$package_manager" install -y libosinfo-bin & pid=$!; wait $pid 
 		echo Enter login name to add to libvirt group?
 		read -e username < $terminal
-		sudo usermod -aG libvirt "$username"
+		sudo usermod -aG libvirt "$username" & pid=$!; wait $pid
 	    	;;
 	yum) 
-		sudo "$package_manager" install -y qemu-kvm bridge-utils virt-manager
-		sudo "$package_manager" install -y libvirt virt-install libvirt-devel virt-top libguestfs-tools guestfs-tools 
+		sudo "$package_manager" install -y qemu-kvm & pid=$!; wait $pid
+		sudo "$package_manager" install -y bridge-utils & pid=$!; wait $pid
+		sudo "$package_manager" install -y virt-manager & pid=$!; wait $pid
+		sudo "$package_manager" install -y libvirt & pid=$!; wait $pid
+		sudo "$package_manager" install -y virt-install & pid=$!; wait $pid
+		sudo "$package_manager" install -y libvirt-devel & pid=$!; wait $pid
+		sudo "$package_manager" install -y virt-top & pid=$!; wait $pid
+		sudo "$package_manager" install -y libguestfs-tools & pid=$!; wait $pid
+		sudo "$package_manager" install -y guestfs-tools & pid=$!; wait $pid
 		echo Enter login name to add to libvirt group?
 		read -e username < $terminal
-		sudo usermod -aG libvirt "$username"
-		sudo systemctl start libvirtd
-		sudo systemctl enable libvirtd
+		sudo usermod -aG libvirt "$username" & pid=$!; wait $pid
+		sudo systemctl start libvirtd & pid=$!; wait $pid
+		sudo systemctl enable libvirtd & pid=$!; wait $pid
 	    	;;
 	zypper)  
-		sudo zypper install -y -t pattern kvm_server kvm_tools 
-		sudo zypper install -y libvirt libvirt-daemon libvirt-daemon-config-nwfilter
-		sudo zypper install -y bridge-utils virt-manager
-		sudo systemctl enable --now libvirtd
+		sudo zypper install -y -t pattern & pid=$!; wait $pid
+		sudo zypper install -y -t kvm_server & pid=$!; wait $pid
+		sudo zypper install -y -t kvm_tools & pid=$!; wait $pid
+		sudo zypper install -y libvirt & pid=$!; wait $pid
+		sudo zypper install -y libvirt-daemon & pid=$!; wait $pid
+		sudo zypper install -y libvirt-daemon-config-nwfilter & pid=$!; wait $pid
+		sudo zypper install -y bridge-utils & pid=$!; wait $pid
+		sudo zypper install -y virt-manager & pid=$!; wait $pid
+		sudo systemctl enable --now libvirtd & pid=$!; wait $pid
 		
 	    	;;
 	*) 	echo "Package manager error"
@@ -104,17 +127,17 @@ KVM () {
 }
 
 Boot-headless () {
-	sudo systemctl set-default multi-user.target 
+	sudo systemctl set-default multi-user.target & pid=$!; wait $pid 
 	echo -e ' '
 	echo "After reboot enter to boot GUI: sudo systemctl isolate graphical.target"
 }
 
 CIFS () {
-	sudo "$package_manager" install -y cifs-utils 
+	sudo "$package_manager" install -y cifs-utils & pid=$!; wait $pid 
 }
 
 Network-Bridge () {
-	sudo nmcli connection show
+	sudo nmcli connection show & pid=$!; wait $pid
 	echo Enter network interface name to link to bridge br0?
 	read -e interface_name < $terminal
 	echo " "
@@ -125,30 +148,30 @@ Network-Bridge () {
 	echo Enter ip address for gateway?
 	read -e gateway < $terminal
 	
-	sudo nmcli connection add type bridge autoconnect yes con-name br0 ifname br0
-	sudo nmcli connection modify br0 ipv4.addresses "$ip_address" gw4 "$gateway" ipv4.method manual 
-	sudo nmcli connection modify br0 ipv4.dns "$gateway" 
-	sudo nmcli connection add type bridge-slave autoconnect yes con-name "$interface_name" ifname "$interface_name" master br0 
-	sudo nmcli connection up br0
+	sudo nmcli connection add type bridge autoconnect yes con-name br0 ifname br0 & pid=$!; wait $pid
+	sudo nmcli connection modify br0 ipv4.addresses "$ip_address" gw4 "$gateway" ipv4.method manual & pid=$!; wait $pid 
+	sudo nmcli connection modify br0 ipv4.dns "$gateway" & pid=$!; wait $pid 
+	sudo nmcli connection add type bridge-slave autoconnect yes con-name "$interface_name" ifname "$interface_name" master br0 & pid=$!; wait $pid 
+	sudo nmcli connection up br0 & pid=$!; wait $pid
 }
 
 ssh () {
 	case "$package_manager" in
 
 	apt-get) 
-		sudo "$package_manager" install openssh-server -y 
-		sudo systemctl start ssh
-		sudo systemctl enable ssh 
+		sudo "$package_manager" install openssh-server -y & pid=$!; wait $pid 
+		sudo systemctl start ssh & pid=$!; wait $pid
+		sudo systemctl enable ssh & pid=$!; wait $pid
 	    	;;
 	yum) 
-		sudo "$package_manager" install openssh-server -y 
-		sudo systemctl start sshd
-		sudo systemctl enable sshd 
+		sudo "$package_manager" install openssh-server -y & pid=$!; wait $pid 
+		sudo systemctl start sshd & pid=$!; wait $pid
+		sudo systemctl enable sshd & pid=$!; wait $pid 
 	    	;;
 	zypper)  
-		sudo "$package_manager" install -y openssh-server 
-		sudo systemctl start sshd
-		sudo systemctl enable sshd 
+		sudo "$package_manager" install -y openssh-server & pid=$!; wait $pid 
+		sudo systemctl start sshd & pid=$!; wait $pid
+		sudo systemctl enable sshd & pid=$!; wait $pid 
 	    	;;
 	*) 	echo "Package manager error"
 	   	;;
@@ -159,7 +182,8 @@ install_app () {
 	 while true; do
 	 	echo -e "\nDo you wish to install $1? "
    		read -p "Please answer (y)es or (n)o." yn
-    	case $yn in
+   	tput setaf $sdoutColor
+      	case $yn in
         		[Yy]* ) 
         			
         			spinner $1 &                                       # calls the loading function
@@ -175,12 +199,14 @@ install_app () {
         		[Nn]* ) break;;
         		* ) echo "Please answer (y)es or (n)o.";;
     	esac
+    	tput sgr0
 	done
 }
 
 function spinner() { # just a function to hold the spinner loop, here you can put whatever
    while true; do
-    	sleep 2
+    	sleep 3
+    	kill -TSTP $pid > /dev/null 2>&1
     	tput sc
     	Margin=5
     	Rows=$(tput lines)
@@ -194,17 +220,18 @@ function spinner() { # just a function to hold the spinner loop, here you can pu
     	tput cup $(($Rows - 2)) $Margin
     	tput el
     	tput el1
-    	((progress=progress+1))
+    	((progress=progress+3))
     	((remaining=${Cols}-${progress}))
     	tput bold
-    	tput setaf $progressBarColor
-    	
+    	tput setaf $progressBarColorFG
+    	tput setab $progressBarColorBG
     	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
     	tput sgr0
     	if (( $progress > ($((Cols-2))) )); then
    		((progress=1))
         fi
         tput rc
+        kill -CONT $pid > /dev/null 2>&1
     done
 }
 
@@ -216,7 +243,7 @@ function Header() {
     	((LSide=((${ESpace}/2))-2))
     	((RSide=$(tput cols)-(${#installer_name})-${LSide}-4))
     	tput cup 0 0
-    	echo -ne "[$(printf "%${LSide}s" | tr " " "#") $(printf "$installer_name") $(printf "%${RSide}s" | tr " " "-")]"
+    	echo -ne "[$(printf "%${LSide}s" | tr " " " ") $(printf "$installer_name") $(printf "%${RSide}s" | tr " " " ")]"
     	tput sgr0
     	echo -e ' '
 }
@@ -345,9 +372,7 @@ fi
 
 Header
 echo "Updating Packages...."
-tput setaf $sdoutColor
 install_app Update
-tput sgr0
 clear
 Header
 echo -e '\nArrow up/down space bar to select'
@@ -361,10 +386,8 @@ for option in "${my_options[@]}"; do
    	Header
 	echo -e ' '
 	echo "Installing.. $option"
-      	tput setaf $sdoutColor
       	install_app $option
       	echo -e ' '
-      	tput sgr0
       	echo "Finished option.. $option"
       	read -p "Press enter to continue"
       	
