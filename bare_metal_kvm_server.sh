@@ -203,6 +203,7 @@ function progress_bar() {
 	while [ -e /proc/$pid ]; do
 		sleep 3
 		kill -STOP $pid > /dev/null 2>&1
+  		sleep 1
 		tput sc
 	    	Rows=$(tput lines)
 	    	Cols=$(tput cols)-2
