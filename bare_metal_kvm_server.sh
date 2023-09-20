@@ -201,7 +201,7 @@ install_app () {
 function progress_bar() { 
 	pid=$1
 	while [ -e /proc/$pid ]; do
-		kill -STOP $pid > /dev/null 2>&1
+		kill -s STOP $pid > /dev/null 2>&1
   		sleep 1
 		tput sc
 	    	Rows=$(tput lines)
@@ -221,7 +221,7 @@ function progress_bar() {
 	   		((progress=1))
 		fi
 		tput rc
-		kill -CONT $pid > /dev/null 2>&1
+		kill -s CONT $pid > /dev/null 2>&1
   		sleep 3
 	done
 }
