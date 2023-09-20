@@ -26,21 +26,21 @@ command -v yum > /dev/null && package_manager="yum"
 command -v zypper > /dev/null && package_manager="zypper"
 
 Update () {
-	sudo "$package_manager" update -y & progress_bar $!;
+	"$package_manager" update -y & progress_bar $!;
 }
  
 Curl () {
-	sudo "$package_manager" install -y curl & progress_bar $!;
+	"$package_manager" install -y curl & progress_bar $!;
 }
 
 Git () {
-	sudo "$package_manager" install -y git & progress_bar $!;
+	"$package_manager" install -y git & progress_bar $!;
 }
 
 Cockpit () {
-	sudo "$package_manager" install -y cockpit & progress_bar $!;
-	sudo "$package_manager" install -y cockpit-machines & progress_bar $!;
-	sudo systemctl enable --now cockpit.socket & progress_bar $!;
+	"$package_manager" install -y cockpit & progress_bar $!;
+	"$package_manager" install -y cockpit-machines & progress_bar $!;
+	systemctl enable --now cockpit.socket & progress_bar $!;
 }
 
 Webmin () {
@@ -48,29 +48,29 @@ Webmin () {
 
 	apt-get) 
 		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh & progress_bar $!;
-		sudo sh setup-repos.sh --force & progress_bar $!;
-		sudo apt-get install --install-recommends webmin -y & progress_bar $!;
+		sh setup-repos.sh --force & progress_bar $!;
+		apt-get install --install-recommends webmin -y & progress_bar $!;
 	    	;;
 	yum) 
-		sudo dnf install -y 'perl(IO::Pty)' & progress_bar $!;
+		dnf install -y 'perl(IO::Pty)' & progress_bar $!;
 		curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh & progress_bar $!;
-		sudo sh setup-repos.sh --force & progress_bar $!;
-		sudo dnf install webmin -y & progress_bar $!;
+		sh setup-repos.sh --force & progress_bar $!;
+		dnf install webmin -y & progress_bar $!;
 		echo Enter password for webmim root account to login webmin?
 		echo " "
 		read -e password < $terminal
-		sudo /usr/libexec/webmin/changepass.pl /etc/webmin root "$password" & progress_bar $!;
+		/usr/libexec/webmin/changepass.pl /etc/webmin root "$password" & progress_bar $!;
 	    	;;
 	zypper)  
-		sudo zypper install -y 'perl(IO::Pty)' & progress_bar $!;  
-		sudo zypper -n install apache2 & progress_bar $!;  
-		sudo zypper -n install openssl & progress_bar $!; 
-		sudo zypper -n install openssl-devel & progress_bar $!;   
-		sudo zypper -n install perl & progress_bar $!; 
-		sudo zypper -n install perl-Net-SSLeay & progress_bar $!; 
-		sudo zypper -n install perl-Crypt-SSLeay & progress_bar $!;  
-		sudo wget http://prdownloads.sourceforge.net/webadmin/webmin-1.770-1.noarch.rpm & progress_bar $!;  
-		sudo rpm -ivh webmin-1.770-1.noarch.rpm & progress_bar $!;  
+		zypper install -y 'perl(IO::Pty)' & progress_bar $!;  
+		zypper -n install apache2 & progress_bar $!;  
+		zypper -n install openssl & progress_bar $!; 
+		zypper -n install openssl-devel & progress_bar $!;   
+		zypper -n install perl & progress_bar $!; 
+		zypper -n install perl-Net-SSLeay & progress_bar $!; 
+		zypper -n install perl-Crypt-SSLeay & progress_bar $!;  
+		wget http://prdownloads.sourceforge.net/webadmin/webmin-1.770-1.noarch.rpm & progress_bar $!;  
+		rpm -ivh webmin-1.770-1.noarch.rpm & progress_bar $!;  
 		;;
 	*) 	echo "Package manager error"
 	   	;;
@@ -81,44 +81,44 @@ KVM () {
 	case "$package_manager" in
 
 	apt-get) 
-		sudo "$package_manager" install -y qemu-kvm & progress_bar $!;
-		sudo "$package_manager" install -y bridge-utils & progress_bar $!;
-		sudo "$package_manager" install -y virt-manager & progress_bar $!; 
-		sudo "$package_manager" install -y libvirt-daemon-system & progress_bar $!;
-		sudo "$package_manager" install -y libvirt-clients & progress_bar $!;
-		sudo "$package_manager" install -y virtinst & progress_bar $!;
-		sudo "$package_manager" install -y libguestfs-tools & progress_bar $!;
-		sudo "$package_manager" install -y libosinfo-bin & progress_bar $!; 
+		"$package_manager" install -y qemu-kvm & progress_bar $!;
+		"$package_manager" install -y bridge-utils & progress_bar $!;
+		"$package_manager" install -y virt-manager & progress_bar $!; 
+		"$package_manager" install -y libvirt-daemon-system & progress_bar $!;
+		"$package_manager" install -y libvirt-clients & progress_bar $!;
+		"$package_manager" install -y virtinst & progress_bar $!;
+		"$package_manager" install -y libguestfs-tools & progress_bar $!;
+		"$package_manager" install -y libosinfo-bin & progress_bar $!; 
 		echo Enter login name to add to libvirt group?
 		read -e username < $terminal
-		sudo usermod -aG libvirt "$username" & progress_bar $!;
+		usermod -aG libvirt "$username" & progress_bar $!;
 	    	;;
 	yum) 
-		sudo "$package_manager" install -y qemu-kvm & progress_bar $!;
-		sudo "$package_manager" install -y bridge-utils & progress_bar $!;
-		sudo "$package_manager" install -y virt-manager & progress_bar $!;
-		sudo "$package_manager" install -y libvirt & progress_bar $!;
-		sudo "$package_manager" install -y virt-install & progress_bar $!;
-		sudo "$package_manager" install -y libvirt-devel & progress_bar $!;
-		sudo "$package_manager" install -y virt-top & progress_bar $!;
-		sudo "$package_manager" install -y libguestfs-tools & progress_bar $!;
-		sudo "$package_manager" install -y guestfs-tools & progress_bar $!;
+		"$package_manager" install -y qemu-kvm & progress_bar $!;
+		"$package_manager" install -y bridge-utils & progress_bar $!;
+		"$package_manager" install -y virt-manager & progress_bar $!;
+		"$package_manager" install -y libvirt & progress_bar $!;
+		"$package_manager" install -y virt-install & progress_bar $!;
+		"$package_manager" install -y libvirt-devel & progress_bar $!;
+		"$package_manager" install -y virt-top & progress_bar $!;
+		"$package_manager" install -y libguestfs-tools & progress_bar $!;
+		"$package_manager" install -y guestfs-tools & progress_bar $!;
 		echo Enter login name to add to libvirt group?
 		read -e username < $terminal
-		sudo usermod -aG libvirt "$username" & progress_bar $!;
-		sudo systemctl start libvirtd & progress_bar $!;
-		sudo systemctl enable libvirtd & progress_bar $!;
+		usermod -aG libvirt "$username" & progress_bar $!;
+		systemctl start libvirtd & progress_bar $!;
+		systemctl enable libvirtd & progress_bar $!;
 	    	;;
 	zypper)  
-		sudo zypper install -y -t pattern & progress_bar $!;
-		sudo zypper install -y -t kvm_server & progress_bar $!;
-		sudo zypper install -y -t kvm_tools & progress_bar $!;
-		sudo zypper install -y libvirt & progress_bar $!;
-		sudo zypper install -y libvirt-daemon & progress_bar $!;
-		sudo zypper install -y libvirt-daemon-config-nwfilter & progress_bar $!;
-		sudo zypper install -y bridge-utils & progress_bar $!;
-		sudo zypper install -y virt-manager & progress_bar $!;
-		sudo systemctl enable --now libvirtd & progress_bar $!;
+		zypper install -y -t pattern & progress_bar $!;
+		zypper install -y -t kvm_server & progress_bar $!;
+		zypper install -y -t kvm_tools & progress_bar $!;
+		zypper install -y libvirt & progress_bar $!;
+		zypper install -y libvirt-daemon & progress_bar $!;
+		zypper install -y libvirt-daemon-config-nwfilter & progress_bar $!;
+		zypper install -y bridge-utils & progress_bar $!;
+		zypper install -y virt-manager & progress_bar $!;
+		systemctl enable --now libvirtd & progress_bar $!;
 		
 	    	;;
 	*) 	echo "Package manager error"
@@ -127,17 +127,17 @@ KVM () {
 }
 
 Boot-headless () {
-	sudo systemctl set-default multi-user.target & progress_bar $!; 
+	systemctl set-default multi-user.target & progress_bar $!; 
 	echo -e ' '
-	echo "After reboot enter to boot GUI: sudo systemctl isolate graphical.target"
+	echo "After reboot enter to boot GUI: systemctl isolate graphical.target"
 }
 
 CIFS () {
-	sudo "$package_manager" install -y cifs-utils & progress_bar $!; 
+	"$package_manager" install -y cifs-utils & progress_bar $!; 
 }
 
 Network-Bridge () {
-	sudo nmcli connection show & progress_bar $!;
+	nmcli connection show & progress_bar $!;
 	echo Enter network interface name to link to bridge br0?
 	read -e interface_name < $terminal
 	echo " "
@@ -148,30 +148,30 @@ Network-Bridge () {
 	echo Enter ip address for gateway?
 	read -e gateway < $terminal
 	
-	sudo nmcli connection add type bridge autoconnect yes con-name br0 ifname br0 & progress_bar $!;
-	sudo nmcli connection modify br0 ipv4.addresses "$ip_address" gw4 "$gateway" ipv4.method manual & progress_bar $!; 
-	sudo nmcli connection modify br0 ipv4.dns "$gateway" & progress_bar $!; 
-	sudo nmcli connection add type bridge-slave autoconnect yes con-name "$interface_name" ifname "$interface_name" master br0 & progress_bar $!; 
-	sudo nmcli connection up br0 & progress_bar $!;
+	nmcli connection add type bridge autoconnect yes con-name br0 ifname br0 & progress_bar $!;
+	nmcli connection modify br0 ipv4.addresses "$ip_address" gw4 "$gateway" ipv4.method manual & progress_bar $!; 
+	nmcli connection modify br0 ipv4.dns "$gateway" & progress_bar $!; 
+	nmcli connection add type bridge-slave autoconnect yes con-name "$interface_name" ifname "$interface_name" master br0 & progress_bar $!; 
+	nmcli connection up br0 & progress_bar $!;
 }
 
 ssh () {
 	case "$package_manager" in
 
 	apt-get) 
-		sudo "$package_manager" install openssh-server -y & progress_bar $!; 
-		sudo systemctl start ssh & progress_bar $!;
-		sudo systemctl enable ssh & progress_bar $!;
+		"$package_manager" install openssh-server -y & progress_bar $!; 
+		systemctl start ssh & progress_bar $!;
+		systemctl enable ssh & progress_bar $!;
 	    	;;
 	yum) 
-		sudo "$package_manager" install openssh-server -y & progress_bar $!; 
-		sudo systemctl start sshd & progress_bar $!;
-		sudo systemctl enable sshd & progress_bar $!; 
+		"$package_manager" install openssh-server -y & progress_bar $!; 
+		systemctl start sshd & progress_bar $!;
+		systemctl enable sshd & progress_bar $!; 
 	    	;;
 	zypper)  
-		sudo "$package_manager" install -y openssh-server & progress_bar $!; 
-		sudo systemctl start sshd & progress_bar $!;
-		sudo systemctl enable sshd & progress_bar $!; 
+		"$package_manager" install -y openssh-server & progress_bar $!; 
+		systemctl start sshd & progress_bar $!;
+		systemctl enable sshd & progress_bar $!; 
 	    	;;
 	*) 	echo "Package manager error"
 	   	;;
