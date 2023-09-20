@@ -206,7 +206,7 @@ function progress_bar() {
 		tput sc
 	    	Rows=$(tput lines)
 	    	Cols=$(tput cols)-2
-	   	tput cup $(($Rows - 2)) $Margin
+	   	tput cup $(($Rows - 2)) 0
 	    	((progress=progress+3))
 	    	((remaining=${Cols}-${progress}))
 	    	tput bold
@@ -214,8 +214,9 @@ function progress_bar() {
 	    	tput setab $progressBarColorBG
 	    	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
 	    	tput sgr0
+      		tput cup $(($Rows - 1)) 0
 	    	tput ed
-	    	echo "PID-$pid"
+	    	echo "   PID-$pid"
 	    	if (( $progress > ($((Cols-2))) )); then
 	   		((progress=1))
 		fi
