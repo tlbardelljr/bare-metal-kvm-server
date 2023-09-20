@@ -31,7 +31,7 @@ chmod +x ./bare_metal_kvm_server.sh
 ```
 
 ```
-./bare_metal_kvm_server.sh
+sudo ./bare_metal_kvm_server.sh
 ```
 
 
