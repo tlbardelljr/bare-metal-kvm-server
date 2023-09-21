@@ -12,7 +12,7 @@
    
 my_options=(   "Curl"  "Git"  "Cockpit" "Webmin" "KVM"  "Boot-headless" "CIFS"  "Network-Bridge" "ssh"   )
 preselection=( "true"  "true" "true"    "true"   "true" "false"         "false" "true"           "false" )
-installer_name="tlbardelljr network VM installer"
+installer_name="tlbardelljr network KVM installer"
 sdoutColor=250
 progressBarColorFG=226
 progressBarColorBG=242
