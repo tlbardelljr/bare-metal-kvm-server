@@ -138,7 +138,7 @@ CIFS () {
 
 Network-Bridge () {
 	nmcli connection show & progress_bar $!;
-	echo Enter network interface name to link to bridge br0?
+	echo Enter network interface device name to link to bridge br0?
 	read -e interface_name < $terminal
 	echo " "
 	echo Use prefix length for network mask.
@@ -200,6 +200,7 @@ install_app () {
 
 function progress_bar() { 
 	pid=$1
+ 	((progress=1))
 	while [ -e /proc/$pid ]; do
 		kill -s STOP $pid > /dev/null 2>&1
 		tput sc
@@ -213,9 +214,9 @@ function progress_bar() {
 	    	tput setab $progressBarColorBG
 	    	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
 	    	tput cup $(($Rows - 1)) 0
+      		tput sgr0
 	    	tput ed
-	    	tput sgr0
-      		if (( $progress > ($((Cols-4))) )); then
+	    	if (( $progress > ($((Cols-4))) )); then
 	   		((progress=1))
 		fi
 		tput rc
