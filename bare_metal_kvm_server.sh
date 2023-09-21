@@ -12,7 +12,7 @@
    
 my_options=(   "Curl"  "Git"  "Cockpit" "Webmin" "KVM"  "Boot-headless" "CIFS"  "Network-Bridge" "ssh"   )
 preselection=( "true"  "true" "true"    "true"   "true" "false"         "false" "true"           "false" )
-installer_name="tlbardelljr network KVM installer"
+installer_name="tlbardelljr network VM installer"
 sdoutColor=250
 progressBarColorFG=226
 progressBarColorBG=242
@@ -202,7 +202,7 @@ function progress_bar() {
 	pid=$1
 	while [ -e /proc/$pid ]; do
 		kill -s STOP $pid > /dev/null 2>&1
-  		tput sc
+		tput sc
 	    	Rows=$(tput lines)
 	    	Cols=$(tput cols)-2
 	   	tput cup $(($Rows - 2)) 0
@@ -212,11 +212,14 @@ function progress_bar() {
 	    	tput setaf $progressBarColorFG
 	    	tput setab $progressBarColorBG
 	    	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
+	    	tput cup $(($Rows - 1)) 0
+	    	tput ed
 	    	tput sgr0
       		if (( $progress > ($((Cols-4))) )); then
 	   		((progress=1))
 		fi
 		tput rc
+		sleep .5
 		kill -s CONT $pid > /dev/null 2>&1
   		sleep 4
 	done
