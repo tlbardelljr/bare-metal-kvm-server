@@ -110,10 +110,10 @@ KVM () {
 		systemctl enable libvirtd & progress_bar $!;
 	    	;;
 	zypper)  
-		zypper install -t pattern kvm_server & progress_bar $!;
-		zypper install -t pattern kvm_tools & progress_bar $!;
+		zypper install -t pattern kvm_server & progress_bar -y $!;
+		zypper install -t pattern kvm_tools & progress_bar -y $!;
 		zypper install -y bridge-utils & progress_bar $!;
-		zypper install -y virt-manager & progress_bar $!;
+		zypper install -y libvirt & progress_bar $!;
 		systemctl enable --now libvirtd & progress_bar $!;
 		
 	    	;;
