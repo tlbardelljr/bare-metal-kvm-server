@@ -357,7 +357,7 @@ if (( "23" > ${TRows} )); then
       	exit
 fi
 
-systemctl stop packagekit
+systemctl stop Packagekit
 Header
 echo "Updating Packages...."
 install_app Update
