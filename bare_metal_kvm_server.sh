@@ -186,8 +186,8 @@ install_app () {
       	case $yn in
         		[Yy]* ) 
         			
-        			tput csr 7 $(($(tput lines) - 7))
-			    	tput cup 7 0
+        			tput csr 8 $(($(tput lines) - 5))
+			    	tput cup 8 0
 			    	$1 
 			    	
         			break;;
@@ -202,27 +202,23 @@ function progress_bar() {
 	pid=$1
 	while [ -e /proc/$pid ]; do
 		kill -s STOP $pid > /dev/null 2>&1
-  		sleep 1
-		tput sc
+  		tput sc
 	    	Rows=$(tput lines)
 	    	Cols=$(tput cols)-2
 	   	tput cup $(($Rows - 2)) 0
-	    	((progress=progress+3))
+	    	((progress=progress+4))
 	    	((remaining=${Cols}-${progress}))
 	    	tput bold
 	    	tput setaf $progressBarColorFG
 	    	tput setab $progressBarColorBG
 	    	echo -ne "[$(printf "%${progress}s" | tr " " "#")$(printf "%${remaining}s" | tr " " "-")]"
 	    	tput sgr0
-      		tput cup $(($Rows - 1)) 0
-	    	tput ed
-	    	echo "   PID-$pid"
-	    	if (( $progress > ($((Cols-2))) )); then
+      		if (( $progress > ($((Cols-4))) )); then
 	   		((progress=1))
 		fi
 		tput rc
 		kill -s CONT $pid > /dev/null 2>&1
-  		sleep 3
+  		sleep 4
 	done
 }
 
