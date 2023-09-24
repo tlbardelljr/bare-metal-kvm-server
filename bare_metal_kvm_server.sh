@@ -38,9 +38,29 @@ Git () {
 }
 
 Cockpit () {
-	"$package_manager" install -y cockpit & progress_bar $!;
-	"$package_manager" install -y cockpit-machines & progress_bar $!;
-	systemctl enable --now cockpit.socket & progress_bar $!;
+	case "$package_manager" in
+
+	apt-get) 
+		"$package_manager" install -y cockpit & progress_bar $!;
+		"$package_manager" install -y cockpit-machines & progress_bar $!;
+		systemctl enable --now cockpit.socket & progress_bar $!;
+	    	;;
+	yum) 
+		"$package_manager" install -y cockpit & progress_bar $!;
+		"$package_manager" install -y cockpit-machines & progress_bar $!;
+		systemctl enable --now cockpit.socket & progress_bar $!;
+	    	;;
+	zypper)  
+		zypper addrepo https://download.opensuse.org/repositories/systemsmanagement:cockpit/15.5/systemsmanagement:cockpit.repo & progress_bar $!;
+  		"$package_manager" install -y cockpit & progress_bar $!;
+		"$package_manager" install -y cockpit-machines & progress_bar $!;
+		systemctl enable --now cockpit.socket & progress_bar $!; 
+		;;
+	*) 	echo "Package manager error"
+	   	;;
+	esac
+
+ 
 }
 
 Webmin () {
