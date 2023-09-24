@@ -88,9 +88,10 @@ Webmin () {
 		zypper -n install openssl-devel & progress_bar $!;   
 		zypper -n install perl & progress_bar $!; 
 		zypper -n install perl-Net-SSLeay & progress_bar $!; 
-		zypper -n install perl-Crypt-SSLeay & progress_bar $!;  
-		wget http://prdownloads.sourceforge.net/webadmin/webmin-1.770-1.noarch.rpm & progress_bar $!;  
-		rpm -ivh webmin-1.770-1.noarch.rpm & progress_bar $!;  
+		zypper -n install perl-Crypt-SSLeay & progress_bar $!; 
+  		zypper -n install perl-Encode-Detect & progress_bar $!; 
+		wget https://sourceforge.net/projects/webadmin/files/webmin/1.979/webmin-1.979-1.noarch.rpm & progress_bar $!;  
+		rpm -ivh webmin-1.979-1.noarch.rpm & progress_bar $!;  
 		;;
 	*) 	echo "Package manager error"
 	   	;;
