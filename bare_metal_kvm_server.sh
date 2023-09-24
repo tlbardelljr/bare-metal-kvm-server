@@ -52,6 +52,7 @@ Cockpit () {
 	    	;;
 	zypper)  
 		zypper addrepo https://download.opensuse.org/repositories/systemsmanagement:cockpit/15.5/systemsmanagement:cockpit.repo & progress_bar $!;
+  		zypper refresh & progress_bar $!;
   		"$package_manager" install -y cockpit & progress_bar $!;
 		"$package_manager" install -y cockpit-machines & progress_bar $!;
 		systemctl enable --now cockpit.socket & progress_bar $!; 
